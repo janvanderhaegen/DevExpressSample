@@ -28,32 +28,12 @@ namespace Devexpress.Printing.MVC.Sample.Models
             //jsonDataSource.Fill();
             //report.DataSource = jsonDataSource;
 
-            report.DataSource = new ReportDataSource(typeof(Customer), queryId, "Query Name", "User Name", "Tenant Id", Customers);
+            var dataSource = new ReportDataSource(typeof(Customer), queryId, "Query Name", "User Name", "Tenant Id", Customers);
+            dataSource.Fill();
+            report.DataSource = dataSource;
 
-            //migrateDataBindingsToExpressions(report);
 
             return report;
-        }
-
-        private static void migrateDataBindingsToExpressions(XtraReport report)
-        {
-            var allControls = report.AllControls<XRControl>().ToArray();
-            foreach (var control in allControls)
-            {
-                if (control.DataBindings != null && control.DataBindings.Any())
-                {
-                    foreach (var binding in control.DataBindings.OfType<XRBinding>().ToArray())
-                    {
-                        control.ExpressionBindings.Add(new ExpressionBinding
-                        {
-                            EventName = "BeforePrint",
-                            Expression = $"[{binding.DataMember}]",
-                            PropertyName = binding.PropertyName
-                        });
-                    }
-                    control.DataBindings.Clear();
-                }
-            }
         }
 
         private static string sampleReportLayout;
@@ -104,7 +84,12 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     Band detailBand = new DetailBand();
                     detailBand.Height = 30;
                     XRLabel valueLabel = new XRLabel();
-                    valueLabel.DataBindings.Add(new XRBinding("Text", null, "Name"));
+                    valueLabel.ExpressionBindings.Add(new ExpressionBinding
+                    {
+                        EventName = "BeforePrint",
+                        Expression = $"[Name]",
+                        PropertyName = "Text"
+                    });
                     valueLabel.Location = new Point(0, 0);
                     detailBand.Controls.Add(valueLabel);
                     report.Bands.Add(detailBand);
