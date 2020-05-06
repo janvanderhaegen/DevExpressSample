@@ -5,6 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using DevExpress.DataAccess.Json;
+using DevExpress.XtraReports.Native;
+using DevExpress.XtraReports.UI;
+using DevExpress.XtraReports.Web.Extensions;
+using Devexpress.Printing.MVC.Sample.Models;
 
 namespace Devexpress.Printing.MVC.Sample
 {
@@ -14,6 +19,13 @@ namespace Devexpress.Printing.MVC.Sample
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+
+            //This report contains bindings, would you like to convert them to expressions => disable prompt and upgrade automatically
+            DevExpress.XtraReports.Configuration.Settings.Default.UserDesignerOptions.ConvertBindingsToExpressions = PromptBoolean.True;
+
+            ReportStorageWebExtension.RegisterExtensionGlobal(new ReportsDataStore());
+            SerializationService.RegisterSerializer(MyDataSerializer.Name, new MyDataSerializer());
         }
     }
 }
