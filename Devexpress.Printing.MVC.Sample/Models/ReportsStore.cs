@@ -7,13 +7,13 @@ using System.Web;
 
 namespace Devexpress.Printing.MVC.Sample.Models
 {
-    public class ReportsDataStore : DevExpress.XtraReports.Web.Extensions.ReportStorageWebExtension
+    public class ReportsStore : DevExpress.XtraReports.Web.Extensions.ReportStorageWebExtension
     {
         public override byte[] GetData(string url)
         {
             try
             {
-                var report = Repository.CreateSampleReport();
+                var report = url == "Customers" ? ReportRepository.CreateSampleMasterReport() : ReportRepository.CreateSampleDetailReport();
                 using (var ms = new MemoryStream())
                 {
                     report.SaveLayoutToXml(ms);
@@ -45,7 +45,14 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 {
                     layout = sr.ReadToEnd();
                 }
-                Repository.SampleReportLayout = layout;
+                if (url == "Customers")
+                {
+                    ReportRepository.SampleMasterReportLayout = layout;
+                }
+                else
+                {
+                    ReportRepository.SampleDetailReportLayout = layout;
+                }
             }
             catch (Exception x)
             {
@@ -56,6 +63,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
         {
             var d = new Dictionary<string, string>(1);
             d["Customers"] = "Customers";
+            d["CustomerDetails"] = "CustomerDetails";
             return d;
         }
         public override void SetData(XtraReport report, Stream stream)
@@ -87,7 +95,14 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 {
                     layout = sr.ReadToEnd();
                 }
-                Repository.SampleReportLayout = layout;
+                if (defaultUrl == "Customers")
+                {
+                    ReportRepository.SampleMasterReportLayout = layout;
+                }
+                else
+                {
+                    ReportRepository.SampleDetailReportLayout = layout;
+                }
                 return defaultUrl;
             }
             catch (Exception x)

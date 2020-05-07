@@ -20,8 +20,8 @@ namespace Devexpress.Printing.MVC.Sample
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            ReportStorageWebExtension.RegisterExtensionGlobal(new ReportsDataStore());
-            SerializationService.RegisterSerializer(MyDataSerializer.Name, new MyDataSerializer());
+            ReportStorageWebExtension.RegisterExtensionGlobal(new ReportsStore());
+            SerializationService.RegisterSerializer(ReportDataSourceSerializer.Name, new ReportDataSourceSerializer());
         }
     }
 }

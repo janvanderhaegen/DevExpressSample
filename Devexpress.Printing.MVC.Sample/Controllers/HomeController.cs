@@ -16,7 +16,26 @@ namespace WebApplication1.Controllers
     {
         public ActionResult Index()
         {
-            var report = Repository.CreateSampleReport();
+            return View();
+        }
+        public ActionResult MasterPrint()
+        {
+            var report = ReportRepository.CreateSampleMasterReport();
+            return View(report);
+        }
+        public ActionResult MasterEdit()
+        {
+            var report = ReportRepository.CreateSampleMasterReport();
+            return View(report);
+        }
+        public ActionResult DetailPrint()
+        {
+            var report = ReportRepository.CreateSampleDetailReport();
+            return View(report);
+        }
+        public ActionResult DetailEdit()
+        {
+            var report = ReportRepository.CreateSampleDetailReport();
             return View(report);
         }
     }

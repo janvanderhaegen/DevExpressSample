@@ -10,25 +10,13 @@ using System.Xml.Linq;
 
 namespace Devexpress.Printing.MVC.Sample.Models
 {
-    public class ReportDataSourceDTO
+    public class Hello
     {
-        public string ReturnType { get; set; }
-        [Newtonsoft.Json.JsonIgnore]
-        public Type ResolvedReturnType { get; set; }
-        public IEnumerable<object> Data { get; set; }
-        public string QueryName { get; set; }
-        public Guid QueryConfigurationId { get; set; }
-        public string UserName { get; set; }
-        public string TenantId { get; set; }
+        public const string World = "Need to place a class here or the file is added to the csproj with subtype 'Designer', which is annoying if you don't have the DevExpress VS tooling installed";
     }
-
     public class ReportDataSource : ObjectDataSource, ITypedList
     {
         public Type ReturnType { get; private set; }
-        public string QueryName { get; private set; }
-        public Guid QueryConfigurationId { get; private set; }
-        public string UserName { get; set; }
-        public string TenantId { get; set; }
 
         public IEnumerable<object> Data
         {
@@ -43,14 +31,10 @@ namespace Devexpress.Printing.MVC.Sample.Models
         {
 
         }
-        public ReportDataSource(Type returnType, Guid queryConfigurationId, string queryName, string userName, string tenantId, IEnumerable<object> data = null)
+        public ReportDataSource(Type returnType, string name, IEnumerable<object> data = null)
         {
             this.ReturnType = returnType;
-            this.QueryName = queryName;
-            this.UserName = userName;
-            this.TenantId = tenantId;
-            this.QueryConfigurationId = queryConfigurationId;
-            this.Name = queryConfigurationId.ToString();
+            this.Name = name;
             if (data != null)
                 this.DataSource = new List<object>(data);
             else
@@ -61,23 +45,40 @@ namespace Devexpress.Printing.MVC.Sample.Models
             var desc = TypeDescriptor.GetProperties(this.ReturnType);
             return desc;
         }
-
         string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
         {
-            return QueryName;
+            return this.Name;
         }
         public override void Fill(IEnumerable<IParameter> sourceParameters)
         {
+            base.Fill(sourceParameters);
             try
             {
-                var executionResult = Repository.Customers;
+                IEnumerable<object> executionResult;
+                if (this.ReturnType.Equals(typeof(CustomerDetail)))
+                {
+                    var customerIdParam = sourceParameters.Where(c => c.Name == "CustomerId").SingleOrDefault();
+                    if (customerIdParam != null && customerIdParam.Value != null && !0.Equals(customerIdParam.Value))
+                    {
+                        executionResult = DataRepository.CustomerDetails((int)customerIdParam.Value);
+                    }
+                    else
+                    {
+                        executionResult = Enumerable.Empty<object>();
+                    }
+                }
+                else if (this.ReturnType.Equals(typeof(Customer)))
+                {
+                    executionResult = DataRepository.Customers;
+                }
+                else
+                    throw new NotImplementedException($"Unknown type: {this.ReturnType.Namespace}.{this.ReturnType.Namespace}");
                 ((List<object>)this.DataSource).Clear();
                 ((List<object>)this.DataSource).AddRange(executionResult);
             }
             catch (Exception x)
             {
-                var message = "Could not run " + (string.IsNullOrEmpty(this.QueryName) ? "one or more queries" : $"query '{this.QueryName}'") + ": " + x.Message;
-                throw new DocumentCreationException($"Could not run query '{this.QueryConfigurationId}' to populate report: {x.Message}");
+                throw new DocumentCreationException($"Could not run query '{this.Name}' to populate report: {x.Message}");
             }
         }
 
@@ -90,22 +91,15 @@ namespace Devexpress.Printing.MVC.Sample.Models
         {
             var cdata = element.FirstNode as XCData;
             var value = cdata.Value;
-            var serializer = new MyDataSerializer();
-            var dto = (ReportDataSourceDTO)serializer.Deserialize(value, typeof(ReportDataSourceDTO).FullName, null);
+            var serializer = new ReportDataSourceSerializer();
+            var dto = (SerializableReportDataSource)serializer.Deserialize(value, typeof(SerializableReportDataSource).FullName, null);
             this.ReturnType = dto.ResolvedReturnType;
-            this.QueryName = dto.QueryName;
             this.DataSource = dto.Data;
-            this.QueryConfigurationId = dto.QueryConfigurationId;
-            this.UserName = dto.UserName;
-            this.TenantId = dto.TenantId;
-            this.Name = dto.QueryName;
+            this.Name = dto.Name;
         }
         public override XElement SaveToXml()
         {
-            if (string.IsNullOrEmpty(this.UserName) && System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Break();
-
-            var serializer = new MyDataSerializer();
+            var serializer = new ReportDataSourceSerializer();
             var serialized = serializer.Serialize(this, null);
             var el = new XElement("ReportDataSource");
             el.Add(new XCData(serialized));

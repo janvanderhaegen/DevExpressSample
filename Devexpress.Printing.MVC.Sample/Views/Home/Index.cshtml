@@ -18,11 +18,28 @@
     )
 </head>
 <body>
-    @Html.DevExpress().ReportDesigner(settings =>
-    {
-        settings.Name = "ReportDesigner";
-    }).Bind(Model).GetHtml()
-
+    <div>
+        <h2>Master report (customers)</h2>
+        <ul>
+            <li>
+                <a href="/Home/MasterPrint">Print</a>
+            </li>
+            <li>
+                <a href="/Home/MasterEdit">Edit</a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <h2>Detail report (customer phone numbers)</h2>
+        <ul>
+            <li>
+                <a href="/Home/DetailPrint">Print</a>
+            </li>
+            <li>
+                <a href="/Home/DetailEdit">Edit</a>
+            </li>
+        </ul>
+    </div>
 </body>
 </html>
 

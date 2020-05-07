@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Reports";
+}
+@model DevExpress.XtraReports.UI.XtraReport
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Report }
+    )
+    @Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.Report }
+    )
+</head>
+<body>
+    <div>
+        <a href="./">Back</a>
+    </div>
+    @Html.DevExpress().ReportDesigner(settings =>
+    {
+        settings.Name = "ReportDesigner";
+    }).Bind(Model).GetHtml()
+</body>
+</html>
+
+
+
