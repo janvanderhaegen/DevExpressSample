@@ -1,3 +1,6 @@
+[DevExpress Issue: t887677](https://supportcenter.devexpress.com/ticket/details/t887677/reporting-master-detail-detail-report-objectdatasource-fill-is-no-longer-called-for)
+
+
 # Devexpress: End User Report Designer sample
 This sample is a very simple and hardcoded version of what we have in production.
 Made it only to troubleshoot issues and be able to share those with the DevExpress team.
