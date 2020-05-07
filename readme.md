@@ -1,3 +1,6 @@
+[DevExpress Issue: t886828](https://supportcenter.devexpress.com/ticket/details/t886828/end-user-report-designer-breaks-on-enabling-the-convertbindingstoexpressions-option-to)
+
+
 # Devexpress: End User Report Designer sample
 This sample is a very simple and hardcoded version of what we have in production.
 Made it only to troubleshoot issues and be able to share those with the DevExpress team.
