@@ -5,19 +5,12 @@ This sample is a very simple and hardcoded version of what we have in production
 Made it only to troubleshoot issues and be able to share those with the DevExpress team.
 
 It features two reports in a master-detail setting.
-Both reports use a standard ObjectDataSource connect to a List of Objects (Customer or CustomerDetail).  
+Both reports use a standard SQLDataSource connect to a table (Customers) or stored Procedure (SP_Customer_Details).
+Run db-init.sql to set up your database and change the "sql" connection string in the web.config
 
 ## Basic Setup
 ### Controllers & Views
 Links to print/edit the master and the detail report.
-
-### Models - Data
-A (hardcoded) data repository. 
-  -  Customers (all). Consumed by the data source of the master report.
-  -  CustomerDetails (by customer id). Consumed by the data source of the detail report.
-
-### Models - ReportDataSource
-See the Fishes.txt example ;-)
 
 ### Models - ReportRepository
 Hardcoded repo that creates the sample layout for the reports.

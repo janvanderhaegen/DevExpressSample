@@ -1,5 +1,6 @@
 ﻿using DevExpress.DataAccess.Json;
 using DevExpress.DataAccess.ObjectBinding;
+using DevExpress.DataAccess.Sql;
 using DevExpress.XtraReports.UI;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,40 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Write(ReportRepository.SampleMasterReportLayout);
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
-                var objectDataSource = new ObjectDataSource();
-                objectDataSource.BeginInit();
-                objectDataSource.Name = "Customers";
-                objectDataSource.DataSource = typeof(AllCustomersDataSource);
-                objectDataSource.Constructor = new ObjectConstructorInfo();
-                objectDataSource.EndInit();
-                report.DataSource = objectDataSource;
+                var sqlDataSource = new SqlDataSource();
+                sqlDataSource.ConnectionName = "sql";
+                sqlDataSource.Name = "sqlDataSource1";
+                var table = new DevExpress.DataAccess.Sql.Table()
+                {
+                    Name = "Customers"
+                };
+                var query = new DevExpress.DataAccess.Sql.SelectQuery()
+                {
+                    Name = "Customers"
+                };
+                query.Tables.Add(table);
+                query.Columns.Add(new Column()
+                {
+                    Expression = new ColumnExpression
+                    {
+                        Table = table,
+                        ColumnName = "CustomerId"
+                    }
+                });
+                query.Columns.Add(new Column()
+                {
+                    Expression = new ColumnExpression
+                    {
+                        Table = table,
+                        ColumnName = "Name"
+                    }
+                });
+                sqlDataSource.Queries.Add(query);
+                sqlDataSource.ResultSchemaSerializable = "PERhdGFTZXQgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxWaWV3IE5hbWU9IkN1c3RvbWVycyI+PEZpZWxkI" +
+    "E5hbWU9IkN1c3RvbWVySWQiIFR5cGU9IkludDMyIiAvPjxGaWVsZCBOYW1lPSJOYW1lIiBUeXBlPSJTd" +
+    "HJpbmciIC8+PC9WaWV3PjwvRGF0YVNldD4=";
+                report.DataSource = sqlDataSource;
+                report.DataMember = "Customers";
             }
             return report;
         }
@@ -77,7 +105,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     valueLabel.ExpressionBindings.Add(new ExpressionBinding
                     {
                         EventName = "BeforePrint",
-                        Expression = $"[Name]",
+                        Expression = $"[Customers.Name]",
                         PropertyName = "Text"
                     });
                     valueLabel.Location = new Point(0, 0);
@@ -88,7 +116,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     subReport.ParameterBindings.Add(new ParameterBinding(
                         parameterName: "CustomerId",
                         dataSource: null,
-                        dataMember: "Id"
+                        dataMember: "Customers.CustomerId"
                         ));
                     subReport.Location = new Point(100, 0);
                     subReport.CanShrink = true;
@@ -125,19 +153,25 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
 
-                var objectDataSource = new ObjectDataSource();
-                objectDataSource.BeginInit();
-                objectDataSource.Name = "CustomerDetails";
-                objectDataSource.DataSource = typeof(CustomerDetailsDataSource);
-                objectDataSource.Constructor = new ObjectConstructorInfo();
-                objectDataSource.Constructor.Parameters.Add(new Parameter
+                var sqlDataSource = new SqlDataSource();
+                sqlDataSource.ConnectionName = "sql";
+                sqlDataSource.Name = "SP_Customer_Details";
+                var storedProc = new DevExpress.DataAccess.Sql.StoredProcQuery()
                 {
-                    Name = "customerId",
+                    Name = "SP_Customer_Details",
+                    StoredProcName = "SP_Customer_Details"
+                };
+                storedProc.Parameters.Add(new DevExpress.DataAccess.Sql.QueryParameter
+                {
+                    Name = "@CustomerId",
                     Type = typeof(DevExpress.DataAccess.Expression),
                     Value = new DevExpress.DataAccess.Expression("?CustomerId", typeof(int))
+
                 });
-                objectDataSource.EndInit();
-                report.DataSource = objectDataSource;
+                sqlDataSource.Queries.Add(storedProc);
+                sqlDataSource.ResultSchemaSerializable = "PERhdGFTZXQgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxWaWV3IE5hbWU9IlNQX0N1c3RvbWVyX0RldGFpbHMiPjxGaWVsZCBOYW1lPSJDdXN0b21lcklkIiBUeXBlPSJJbnQzMiIgLz48RmllbGQgTmFtZT0iRGV0YWlsSWQiIFR5cGU9IkludDMyIiAvPjxGaWVsZCBOYW1lPSJQaG9uZU51bWJlciIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJEZXNjcmlwdGlvbiIgVHlwZT0iU3RyaW5nIiAvPjwvVmlldz48L0RhdGFTZXQ+";
+                report.DataSource = sqlDataSource;
+                report.DataMember = "SP_Customer_Details";
             }
             return report;
         }
@@ -204,7 +238,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     customerIdLabel.ExpressionBindings.Add(new ExpressionBinding
                     {
                         EventName = "BeforePrint",
-                        Expression = $"[CustomerId]",
+                        Expression = $"[SP_Customer_Details.CustomerId]",
                         PropertyName = "Text"
                     });
                     detailBand.Controls.Add(customerIdLabel);
@@ -213,7 +247,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     detailIdLabel.ExpressionBindings.Add(new ExpressionBinding
                     {
                         EventName = "BeforePrint",
-                        Expression = $"[DetailId]",
+                        Expression = $"[SP_Customer_Details.DetailId]",
                         PropertyName = "Text"
                     });
                     detailBand.Controls.Add(detailIdLabel);
@@ -223,7 +257,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     phoneNumberLabel.ExpressionBindings.Add(new ExpressionBinding
                     {
                         EventName = "BeforePrint",
-                        Expression = $"[PhoneNumber]",
+                        Expression = $"[SP_Customer_Details.PhoneNumber]",
                         PropertyName = "Text"
                     });
                     detailBand.Controls.Add(phoneNumberLabel);
@@ -232,7 +266,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                     descriptionLabel.ExpressionBindings.Add(new ExpressionBinding
                     {
                         EventName = "BeforePrint",
-                        Expression = $"[Description]",
+                        Expression = $"[SP_Customer_Details.Description]",
                         PropertyName = "Text"
                     });
                     detailBand.Controls.Add(descriptionLabel);
