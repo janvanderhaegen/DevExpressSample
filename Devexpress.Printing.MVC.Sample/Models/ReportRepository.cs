@@ -1,4 +1,5 @@
 ﻿using DevExpress.DataAccess.Json;
+using DevExpress.DataAccess.ObjectBinding;
 using DevExpress.XtraReports.UI;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,14 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Write(ReportRepository.SampleMasterReportLayout);
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
+                var objectDataSource = new ObjectDataSource();
+                objectDataSource.BeginInit();
+                objectDataSource.Name = "Customers";
+                objectDataSource.DataSource = typeof(AllCustomersDataSource);
+                objectDataSource.Constructor = new ObjectConstructorInfo();
+                objectDataSource.EndInit();
+                report.DataSource = objectDataSource;
             }
-            report.Extensions[DevExpress.XtraReports.Native.SerializationService.Guid] = ReportDataSourceSerializer.Name;
-            report.DataSource = new ReportDataSource(typeof(Customer), "Customers");
             return report;
         }
 
@@ -118,9 +124,21 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Write(ReportRepository.SampleDetailReportLayout);
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
+
+                var objectDataSource = new ObjectDataSource();
+                objectDataSource.BeginInit();
+                objectDataSource.Name = "CustomerDetails";
+                objectDataSource.DataSource = typeof(CustomerDetailsDataSource);
+                objectDataSource.Constructor = new ObjectConstructorInfo();
+                objectDataSource.Constructor.Parameters.Add(new Parameter
+                {
+                    Name = "customerId",
+                    Type = typeof(DevExpress.DataAccess.Expression),
+                    Value = new DevExpress.DataAccess.Expression("?CustomerId", typeof(int))
+                });
+                objectDataSource.EndInit();
+                report.DataSource = objectDataSource;
             }
-            report.Extensions[DevExpress.XtraReports.Native.SerializationService.Guid] = ReportDataSourceSerializer.Name;
-            report.DataSource = new ReportDataSource(typeof(CustomerDetail), "CustomerDetails");
             return report;
         }
 
@@ -139,7 +157,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                         Name = "CustomerId",
                         Type = typeof(int),
                         MultiValue = false,
-                        Visible = false
+                        Visible = true
                     });
 
                     var pageHeaderBand = new PageHeaderBand();

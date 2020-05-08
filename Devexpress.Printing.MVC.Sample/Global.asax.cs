@@ -21,7 +21,6 @@ namespace Devexpress.Printing.MVC.Sample
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ReportStorageWebExtension.RegisterExtensionGlobal(new ReportsStore());
-            SerializationService.RegisterSerializer(ReportDataSourceSerializer.Name, new ReportDataSourceSerializer());
         }
     }
 }

@@ -82,11 +82,6 @@ namespace Devexpress.Printing.MVC.Sample.Models
         {
             try
             {
-                var datasource = report.DataSource as ReportDataSource;
-                if (datasource != null)
-                {
-                    report.DataSource = null;
-                }
                 var layoutStream = new MemoryStream();
                 report.SaveLayoutToXml(layoutStream);
                 layoutStream.Position = 0;
