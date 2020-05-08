@@ -128,9 +128,10 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 var objectDataSource = new ObjectDataSource();
                 objectDataSource.BeginInit();
                 objectDataSource.Name = "CustomerDetails";
-                objectDataSource.DataSource = typeof(CustomerDetailsDataSource);
+                objectDataSource.DataSource = typeof(CustomerDetailsDataRepo);
                 objectDataSource.Constructor = new ObjectConstructorInfo();
-                objectDataSource.Constructor.Parameters.Add(new Parameter
+                objectDataSource.DataMember = nameof(CustomerDetailsDataRepo.Details);
+                objectDataSource.Parameters.Add(new Parameter
                 {
                     Name = "customerId",
                     Type = typeof(DevExpress.DataAccess.Expression),

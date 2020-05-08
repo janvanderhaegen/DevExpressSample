@@ -19,14 +19,14 @@ namespace Devexpress.Printing.MVC.Sample.Models
         }
     }
 
-    [DisplayName("CustomerDetails")]
+    [DisplayName("Repo")]
     [HighlightedClass]
-    public class CustomerDetailsDataSource : List<CustomerDetail>
+    public class CustomerDetailsDataRepo
     {
         [HighlightedMember]
-        public CustomerDetailsDataSource(int customerId) : base(DataRepository.CustomerDetails(customerId))
+        public IEnumerable<CustomerDetail> Details(int customerId)
         {
-
+            return DataRepository.CustomerDetails(customerId);
         }
     }
 }
