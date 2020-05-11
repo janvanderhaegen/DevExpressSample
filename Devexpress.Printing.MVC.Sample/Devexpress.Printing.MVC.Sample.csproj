@@ -269,11 +269,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Data.cs" />
-    <Compile Include="Models\ReportRepository.cs" />
-    <Compile Include="Models\ReportDataSourceSerializer.cs" />
-    <Compile Include="Models\ReportDataSource.cs" />
-    <Compile Include="Models\ReportsStore.cs" />
+    <Compile Include="Models\Data.Repository.cs" />
+    <Compile Include="Models\Report.Repository.cs" />
+    <Compile Include="Models\Report.Store.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +306,12 @@
     <Content Include="..\readme.md">
       <Link>readme.md</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Data.Retriever.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Data.Models.cs" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

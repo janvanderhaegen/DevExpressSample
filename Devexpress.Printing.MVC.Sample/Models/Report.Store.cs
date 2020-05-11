@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Devexpress.Printing.MVC.Sample.Models
 {
-    public class ReportsStore : DevExpress.XtraReports.Web.Extensions.ReportStorageWebExtension
+    public class InMemoryReportsStore : DevExpress.XtraReports.Web.Extensions.ReportStorageWebExtension
     {
         public override byte[] GetData(string url)
         {
@@ -82,11 +82,6 @@ namespace Devexpress.Printing.MVC.Sample.Models
         {
             try
             {
-                var datasource = report.DataSource as ReportDataSource;
-                if (datasource != null)
-                {
-                    report.DataSource = null;
-                }
                 var layoutStream = new MemoryStream();
                 report.SaveLayoutToXml(layoutStream);
                 layoutStream.Position = 0;

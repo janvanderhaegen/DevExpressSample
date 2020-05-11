@@ -24,22 +24,26 @@ namespace Devexpress.Printing.MVC.Sample.Models
                             };
                         })
                         .ToArray();
-        public static IEnumerable<Customer> Customers { get { return customers; } }
-        public static IEnumerable<CustomerDetail> CustomerDetails(int customerId)
+        public IEnumerable<object> Execute(string queryName)
         {
-            return customerDetails.Where(c => c.CustomerId == customerId);
+            if (queryName.Equals(typeof(Customer).Name))
+                return customers;
+            throw new NotImplementedException($"Unidentified query: '{queryName}'");
         }
-    }
-    public class Customer
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-    public class CustomerDetail
-    {
-        public int CustomerId { get; set; }
-        public int DetailId { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Description { get; set; }
+        public IEnumerable<object> Execute(string queryName, object arg1)
+        {
+            if (queryName.Equals(typeof(CustomerDetail).Name))
+            {
+                var customerId = (int)arg1;
+                var customersDetails = customerDetails.Where(c => c.CustomerId == customerId).ToArray();
+                return customersDetails;
+            }
+            throw new NotImplementedException($"Unidentified query: '{queryName}'");
+        }
+        public IEnumerable<object> Execute(string queryName, object arg1, object arg2)
+        {
+            throw new NotImplementedException($"Unidentified query: '{queryName}'");
+        }
+        //ETC 
     }
 }

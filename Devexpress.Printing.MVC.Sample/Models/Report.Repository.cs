@@ -1,4 +1,5 @@
 ﻿using DevExpress.DataAccess.Json;
+using DevExpress.DataAccess.ObjectBinding;
 using DevExpress.XtraReports.UI;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,20 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
             }
-            report.Extensions[DevExpress.XtraReports.Native.SerializationService.Guid] = ReportDataSourceSerializer.Name;
-            report.DataSource = new ReportDataSource(typeof(Customer), "Customers");
+            var objectDataSource = new ObjectDataSource();
+            objectDataSource.BeginInit();
+            objectDataSource.Name = "Query: Customers";
+            objectDataSource.DataSource = typeof(GenericDataRetriever<Customer>);
+            objectDataSource.Constructor = new ObjectConstructorInfo();
+            objectDataSource.DataMember = nameof(GenericDataRetriever<Customer>.Execute);
+            objectDataSource.Parameters.Add(new Parameter
+            {
+                Name = "queryName",
+                Type = typeof(string),
+                Value = typeof(Customer).Name
+            });
+            objectDataSource.EndInit();
+            report.DataSource = objectDataSource;
             return report;
         }
 
@@ -119,8 +132,26 @@ namespace Devexpress.Printing.MVC.Sample.Models
                 sw.Flush();
                 report.LoadLayoutFromXml(sw.BaseStream);
             }
-            report.Extensions[DevExpress.XtraReports.Native.SerializationService.Guid] = ReportDataSourceSerializer.Name;
-            report.DataSource = new ReportDataSource(typeof(CustomerDetail), "CustomerDetails");
+            var objectDataSource = new ObjectDataSource();
+            objectDataSource.BeginInit();
+            objectDataSource.Name = "Customer details";
+            objectDataSource.DataSource = typeof(GenericDataRetriever<CustomerDetail>);
+            objectDataSource.Constructor = new ObjectConstructorInfo();
+            objectDataSource.DataMember = nameof(GenericDataRetriever<CustomerDetail>.Execute);
+            objectDataSource.Parameters.Add(new Parameter
+            {
+                Name = "queryName",
+                Type = typeof(string),
+                Value = typeof(CustomerDetail).Name
+            });
+            objectDataSource.Parameters.Add(new Parameter
+            {
+                Name = "arg1",
+                Type = typeof(DevExpress.DataAccess.Expression),
+                Value = new DevExpress.DataAccess.Expression("?CustomerId", typeof(int))
+            });
+            objectDataSource.EndInit();
+            report.DataSource = objectDataSource;
             return report;
         }
 
@@ -139,7 +170,7 @@ namespace Devexpress.Printing.MVC.Sample.Models
                         Name = "CustomerId",
                         Type = typeof(int),
                         MultiValue = false,
-                        Visible = false
+                        Visible = true
                     });
 
                     var pageHeaderBand = new PageHeaderBand();
